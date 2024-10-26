@@ -1,0 +1,43 @@
+using System;
+using InTheHand.Net.Bluetooth;
+using InTheHand.Net.Sockets;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Inicializa o Bluetooth client
+        BluetoothClient bluetoothClient = new BluetoothClient();
+
+        // Obtém a lista de dispositivos emparelhados
+        BluetoothDeviceInfo[] devices = bluetoothClient.DiscoverDevices(255, true, true, false);
+
+        Console.WriteLine("Dispositivos Bluetooth emparelhados:");
+
+        foreach (BluetoothDeviceInfo device in devices)
+        {
+            Console.WriteLine($"Nome: {device.DeviceName}, Endereço: {device.DeviceAddress}");
+
+            // Se o dispositivo estiver conectado, tenta desconectar
+            if (device.Connected)
+            {
+                Console.WriteLine($"Tentando desconectar o dispositivo: {device.DeviceName}");
+                DisconnectDevice(device);
+            }
+        }
+    }
+
+    static void DisconnectDevice(BluetoothDeviceInfo device)
+    {
+        try
+        {
+            // Comando para desconectar o dispositivo (desemparelhar ou desconectar)
+            device.Refresh();
+            Console.WriteLine($"{device.DeviceName} desconectado com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao desconectar {device.DeviceName}: {ex.Message}");
+        }
+    }
+}
